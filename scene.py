@@ -21,13 +21,13 @@ from mesh import Mesh
 
 class Scene :
 	def __init__( self , fovy , ratio , near , far ) :
+		self.t = 0
 		self.fovy = fovy
 		self.near = near 
 		self.far = far
 		self.ratio = ratio
 
 		self.camera = None
-		self.mesh = Mesh('plane.mesh')
 
 		self.x = 0.0
 
@@ -48,14 +48,18 @@ class Scene :
 		glEnable( GL_COLOR_MATERIAL )
 		glColorMaterial( GL_FRONT , GL_AMBIENT_AND_DIFFUSE )
 
+	def reset( self ) :
+		self.t = 0.0
+
 	def draw( self ) :
 		self._update_proj()
 
 		self.time = timer()
 
 		dt = self.time - self.last_time
+		self.t += dt
 
-		self._step( dt )
+		self._step( self.t , dt )
 
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
@@ -64,19 +68,17 @@ class Scene :
 
 		self.lpos = [ m.sin(self.x/100)*2 , -1 , m.cos(self.x/100)*2 ]
 
-		self._set_lights()
-
 		self._draw_scene()
 
 		self.x+=dt*.3
 
 		self.last_time = self.time
 
-	def _step( self , dt ) :
+	def _step( self , t , dt ) :
 		pass
 
 	def _draw_scene( self ) :
-		self.mesh.draw()
+		pass
 
 	def _update_proj( self ) :
 		glMatrixMode(GL_PROJECTION)
@@ -109,8 +111,9 @@ class Scene :
 		self.height = h
 		self.set_ratio( float(w)/float(h) )
 
-	def mouse_move( self , df ) :
-		self.camera.rot( *map( lambda x : -x*.2 , df ) )
+	def mouse_move( self , df , buts ) :
+		if 3 in buts and buts[3] :
+			self.camera.rot( *map( lambda x : -x*.2 , df ) )
 
 	def key_pressed( self , mv ) :
 		self.camera.move( *map( lambda x : x*.25 , mv ) )
