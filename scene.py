@@ -51,15 +51,22 @@ class Scene :
 	def reset( self ) :
 		self.t = 0.0
 
-	def draw( self ) :
-		self._update_proj()
-
+	def step( self , anim ) :
 		self.time = timer()
 
 		dt = self.time - self.last_time
-		self.t += dt
 
-		self._step( self.t , dt )
+		if anim :
+			self.t += dt
+			self._step( self.t , dt )
+
+		self.x+=dt*.3
+
+		self.last_time = self.time
+
+
+	def draw( self ) :
+		self._update_proj()
 
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
@@ -69,10 +76,6 @@ class Scene :
 		self.lpos = [ m.sin(self.x/100)*2 , -1 , m.cos(self.x/100)*2 ]
 
 		self._draw_scene()
-
-		self.x+=dt*.3
-
-		self.last_time = self.time
 
 	def _step( self , t , dt ) :
 		pass

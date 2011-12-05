@@ -26,6 +26,9 @@ class QuaternionsScene( Scene ) :
 		self.qc = self.qb
 		self.qe = tr.random_quaternion()
 
+	def __repr__( self ) :
+		return np.array_str( self.qc , 60 , 2 , True )
+
 	def set_matrix( self , mb , me ) :
 		self.qb = tr.quaternion_from_matrix( mb )
 		self.qe = tr.quaternion_from_matrix( me )

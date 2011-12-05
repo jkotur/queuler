@@ -30,6 +30,9 @@ class EulersScene( Scene ) :
 		self.ac = self.ab
 		self.ae = np.array((.5,.2,.1) , np.float64 )
 
+	def __repr__( self ) :
+		return np.array_str( self.ac , 60 , 2 , True )
+
 	def set_matrix( self , mb , me ) :
 		self.ab = np.array( tr.euler_from_matrix( mb ) , np.float64 )
 		self.ae = np.array( tr.euler_from_matrix( me ) , np.float64 )

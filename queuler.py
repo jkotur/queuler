@@ -52,6 +52,8 @@ class App(object):
 		win_main = builder.get_object("win_main")
 		self.save_diag = builder.get_object("save_dialog")
 		self.open_diag = builder.get_object("open_dialog")
+		self.leuler      = builder.get_object("leuler")
+		self.lquaternion = builder.get_object("lquaternion")
 
 		win_main.set_events( gtk.gdk.KEY_PRESS_MASK | gtk.gdk.KEY_RELEASE_MASK )
 
@@ -86,9 +88,26 @@ class App(object):
 		self.drawing_area.connect('configure_event',self._on_reshape)
 		self.drawing_area.connect_after('expose_event',self._after_draw)
 
+		self.anim = False
 		gtk.timeout_add( 1 , self._refresh )
 
+	def on_anim_toggle( self , widget , data=None ) :
+		if self.anim :
+			self.on_stop()
+		else :
+			self.on_start()
+
+	def on_start( self ) :
+		self.anim = True
+
+	def on_stop( self ) :
+		self.anim = False
+
 	def _refresh( self ) :
+		self.leuler.set_text( str(self.escene) )
+		self.lquaternion.set_text( str(self.qscene) )
+		self.qscene.step( self.anim )
+		self.escene.step( self.anim )
 		self.drawing_area.queue_draw()
 		return True
 
@@ -111,7 +130,7 @@ class App(object):
 		if data.button == 1 or data.button == 2 or data.button == 3 :
 			self.mouse_pos = data.x , data.y
 		self.button[data.button] = True
-		self.drawing_area.queue_draw()
+		self._refresh()
 
 	def _on_button_released( self , widget , data=None ) :
 		self.button[data.button] = False
@@ -124,7 +143,7 @@ class App(object):
 		self.escene.mouse_move( diff , self.button )
 
 		self.mouse_pos = data.x , data.y
-		self.drawing_area.queue_draw()
+		self._refresh() 
 
 #        gtk.gdk.Keymap
 
@@ -153,7 +172,7 @@ class App(object):
 	def _move_callback( self ) :
 		self.qscene.key_pressed( self.move )
 		self.escene.key_pressed( self.move )
-		self.drawing_area.queue_draw()
+		self._refresh()
 		return any(self.move)
 
 	def init_glext(self):
